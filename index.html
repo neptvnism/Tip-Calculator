@@ -6,12 +6,19 @@
   <title>Tip Calculator</title>
   <style>
     body {
-      font-family: sans-serif;
+      font-family: 'Arial Rounded MT Bold', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background-color: #f0f0f0;
+      background-image: repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 10px,
+        #f0f0f0 10px,
+        #f0f0f0 20px
+      );
+      background-size: 20px 20px;
     }
 
     .calculator {
@@ -48,7 +55,7 @@
       cursor: pointer;
     }
 
-    #tip-amount {
+    #tip-amount, #total-amount {
       font-size: 1.2em;
       margin-top: 15px;
     }
@@ -65,20 +72,51 @@
       <label for="tip-percentage">Tip Percentage:</label>
       <input type="number" id="tip-percentage" placeholder="Enter tip percentage" value="15">
     </div>
-    <button id="calculate-button">Calculate Tip</button>
+    <div class="input-group">
+      <label for="custom-tip">Custom Tip:</label>
+      <input type="number" id="custom-tip" placeholder="Enter custom tip amount">
+    </div>
+    <div class="input-group">
+      <label for="split-number">Split Between:</label>
+      <input type="number" id="split-number" placeholder="Number of people" value="1">
+    </div>
+    <button id="calculate-button">Calculate</button>
     <div id="tip-amount">Tip Amount: $0</div>
+    <div id="total-amount">Total Amount: $0</div>
   </div>
   <script>
     const billAmountInput = document.getElementById('bill-amount');
     const tipPercentageInput = document.getElementById('tip-percentage');
+    const splitNumberInput = document.getElementById('split-number');
+    const customTipInput = document.getElementById('custom-tip'); 
     const calculateButton = document.getElementById('calculate-button');
     const tipAmountDisplay = document.getElementById('tip-amount');
+    const totalAmountDisplay = document.getElementById('total-amount');
 
     calculateButton.addEventListener('click', () => {
       const billAmount = parseFloat(billAmountInput.value);
-      const tipPercentage = parseFloat(tipPercentageInput.value) / 100;
-      const tipAmount = billAmount * tipPercentage;
+      const tipPercentage = parseFloat(tipPercentageInput.value) / 100; 
+      const splitNumber = parseInt(splitNumberInput.value);
+      const customTip = parseFloat(customTipInput.value);
+
+      let tipAmount;
+      if (customTip > 0) { 
+        tipAmount = customTip;
+      } else {
+        tipAmount = billAmount * tipPercentage;
+      }
+
+      const totalAmount = billAmount + tipAmount;
+      const tipPerPerson = tipAmount / splitNumber;
+      const totalPerPerson = totalAmount / splitNumber;
+
       tipAmountDisplay.textContent = `Tip Amount: $${tipAmount.toFixed(2)}`;
+      totalAmountDisplay.textContent = `Total Amount: $${totalAmount.toFixed(2)}`;
+
+      if (splitNumber > 1) {
+        tipAmountDisplay.textContent = `Tip per person: $${tipPerPerson.toFixed(2)}`;
+        totalAmountDisplay.textContent = `Total per person: $${totalPerPerson.toFixed(2)}`;
+      }
     });
   </script>
 </body>
